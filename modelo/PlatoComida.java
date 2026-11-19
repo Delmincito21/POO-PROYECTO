@@ -1,6 +1,6 @@
 package modelo;
 public class PlatoComida extends Pedido{
-    private Boolean tieneBebida;
+    private boolean tieneBebida;
 
     
     public PlatoComida(String idPedido, int numMesa, String descripcion, double precioBase, boolean tieneBebida){

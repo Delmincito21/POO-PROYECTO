@@ -23,5 +23,26 @@ public class Mesa implements Serializable {
     public List<Pedido> getListaPedidos() {return listaPedidos;}
     public void setListaPedidos(List<Pedido> listaPedidos) {this.listaPedidos = listaPedidos;}
 
-    //add pedido, calcularTotalCuenta, clear mesa
+    public void addPedido(Pedido pedido){
+        if(pedido == null){
+            throw new IllegalArgumentException("Pedido Inválido");
+        }
+
+        pedido.setNumMesa(numMesa);
+        listaPedidos.add(pedido);
+        estado = EstadoMesa.OCUPADA;
+    }
+
+    public double TotalCuenta(){
+        double total =0;
+        for(Pedido pedido : listaPedidos){
+            total += pedido.calcularTotal();
+        }
+        return total;
+    }
+    public void limpiarMesa()
+    {
+        listaPedidos.clear();
+        estado = EstadoMesa.LIBRE;
+    }
 }

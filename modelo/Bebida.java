@@ -16,7 +16,7 @@ public class Bebida extends Pedido{
         double itbis = getPrecioBase()* 0.18; //Cambiar itbis cualquier vaina
         double tip = getPrecioBase() * 0.10; // lo mimo de arriba
         double itbisAlcohol; 
-        if(tieneAlcohol == true)
+        if(tieneAlcohol)
         {
             itbisAlcohol= getPrecioBase() * 0.10;
         }
