@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Mesa implements Serializable {
+    public enum EstadoMesa {LIBRE, OCUPADA, PENDIENTE_CUENTA}
     private int numMesa;
     private EstadoMesa estado;
     private List<Pedido> listaPedidos;

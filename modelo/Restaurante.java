@@ -6,9 +6,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import modelo.Pedido.EstadoPedido;
+
 public class Restaurante implements Serializable {
 private Map<Integer,Mesa> mesas;
 private List<Pedido> historialPedidos;
+
+
 
 public Restaurante(int cantMesas)
 {
@@ -31,12 +35,13 @@ public Mesa obtenerMesa(int numMesa){
     }
     return mesa;
 }
-    public void AgregarPedidoMesa(int numMesa, Pedido pedido){
+    public void agregarPedidoMesa(int numMesa, Pedido pedido){
         Mesa mesa = obtenerMesa(numMesa);
         mesa.addPedido(pedido);
         historialPedidos.add(pedido);
         System.out.println("Pedido agregado a la mesa "+ numMesa + " Descripción: " + pedido.getDescripcion());
     }
+
     
     public List<Pedido> getPedidosActivos(){
         List<Pedido> pedidosActivos = new ArrayList<>();
@@ -49,5 +54,18 @@ public Mesa obtenerMesa(int numMesa){
         }
        }
        return pedidosActivos;
+    }
+
+        public List<Pedido> getHistorialPedidos() {
+        return historialPedidos;
+    }
+    public Pedido buscarPedido(String idPedido)
+    {
+        for(Pedido p : historialPedidos){
+            if(p.getIdPedido().equals(idPedido)){
+                return p;
+            } 
+        }
+        throw new IllegalArgumentException("Pedido de ID: " + idPedido + " no existe.");
     }
 }

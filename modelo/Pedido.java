@@ -2,6 +2,7 @@ package modelo;
 import java.io.Serializable;
 
 public abstract class Pedido implements Serializable{
+    public enum EstadoPedido {PENDIENTE, PROCESO, LISTO, ENTREGADO}
     private String idPedido;
     private int numMesa;
     private String descripcion;
