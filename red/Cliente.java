@@ -16,9 +16,72 @@ public class Cliente {
         this.puerto = puerto;
         this.isConectado = false;
 }
-    public static void main(String[] args) {   
+public void conectar(){
+    try{
+        
+        socket = new Socket(host,puerto);
+        salida = new ObjectOutputStream(socket.getOutputStream());
+        entrada = new ObjectInputStream(socket.getInputStream());
+        isConectado = true;
+        System.out.println("Conectado al servidor correctamente");
+
+    }catch(IOException e ){
+        System.out.println("Error al crear el cliente: " + e.getMessage());
+    }
+}
+public void enviarMsgServidor(Mensaje m){
+    if(!isConectado){
+        System.out.println("No hay conexión con el servidor.");
+        return;
+    }
+    try{
+        salida.writeObject(m);
+        salida.flush();
+
+    }catch(IOException e){
+        System.out.println("Error al enviar mensaje: " + e.getMessage());
+    }
+}
+public Mensaje recibirMsgServidor() throws ClassNotFoundException{ // profe ese thowr lo puso el bombillo
+    if(!isConectado){
+        System.out.println("No hay conexión con el servidor.");
+        return null;
+    }
+    try{
+        return (Mensaje) entrada.readObject();
+    }catch(IOException e){
+        System.out.println("Error al recibir mensaje: "+ e.getMessage());
+        return null;
+    }
+
+}
+public void cerrarConexion(){
+    try{
+        isConectado = false;
+        if(entrada != null){ entrada.close();}
+        if(salida != null){ salida.close();}
+
+        if(socket != null){socket.close();}
+
+    }catch(IOException e){
+        System.out.println("Error al cerrar conexíon: "+ e.getMessage());
+
+    }
+}
+public static void main(String[] args) {   
         final  String HOST ="127.0.0.1";
-        final int puerto = 5000;
+        final int puerto = 8080;
+        Cliente cliente = new Cliente(HOST, puerto);
+        cliente.conectar();
+        if(cliente.isConectado){
+            System.out.println("Cliente listo");
+
+            Mensaje msg = new Mensaje(Mensaje.tipoMensaje.INFO, null, 0, "SOY el cliente");
+            cliente.enviarMsgServidor(msg);
+            cliente.cerrarConexion();
+        }
+        //hacer algo pa que no se deconecte rapido
+    
         
     }
 }

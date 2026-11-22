@@ -42,7 +42,7 @@ public class ManejadorCliente implements Runnable{
                 switch (mensaje.getTipo()) {
                     case NUEVO_PEDIDO:
                         restaurante.agregarPedidoMesa(mensaje.getNumMesa(), mensaje.getPedido());
-                        ProcesarPedido procesar = new ProcesarPedido(mensaje.getPedido());
+                        ProcesarPedido procesar = new ProcesarPedido(mensaje.getPedido(),servidor);
                         Thread hiloCocina = new Thread(procesar);
                         hiloCocina.start();
                         servidor.difusion(mensaje);
@@ -66,6 +66,9 @@ public class ManejadorCliente implements Runnable{
                     case CIERRE_CAJA:
                         CierreCaja.generarCierre(restaurante); //Explicar al profe porque pregunte a la IA sobre lo de static
                         enviarMensaje(new Mensaje(Mensaje.tipoMensaje.INFO, null, 0, "Cierre de caja correcto."));
+                        break;
+                    case INFO:
+                        System.out.println("MSG DEL CLI: " + mensaje.getDescripcion());
                         break;
                     default:
                         System.out.println("Mensaje no reconocido.");

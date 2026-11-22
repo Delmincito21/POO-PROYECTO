@@ -8,7 +8,7 @@ public class ProcesarPedido implements  Runnable{
     private Pedido pedido;
     private Servidor servidor;
     
-    public ProcesarPedido(Pedido pedido) {
+    public ProcesarPedido(Pedido pedido, Servidor servidor) {
         this.pedido = pedido;
         this.servidor = servidor;
 
