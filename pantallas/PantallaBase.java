@@ -1,27 +1,35 @@
 package pantallas;
 
-import java.awt.*;
 import javax.swing.*;
+import red.*;
 
+public abstract class PantallaBase extends JFrame {
+    protected Cliente cliente;
 
-public class PantallaBase extends JFrame {
-    private  JPanel panelHeader;
-    private  JPanel panelContenido;
-    private  JPanel panelFooter;
-    private  JLabel lblTitulo;
-    private  JLabel lblEstado;
-
-    public PantallaBase(String tituloVentana, String tituloHeader){
-        setTitle(tituloVentana);
-        setSize(950, 700);
+    public PantallaBase(String titulo) {
+        setTitle(titulo);
+        setSize(400, 400);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLocationRelativeTo(null);
-        setLayout(new BorderLayout());
-        getContentPane().setBackground(new Color(100,166,22)); // un azulito exotico
-
-        //Header
-        panelHeader = new JPanel(new BorderLayout());
-        panelHeader.setBackground(new Color(184,209,231));
         
+        
+        cliente = new Cliente("127.0.0.4", 8080);
+        cliente.conectar();
+
+        new Thread(() -> {
+            while (true) {
+                try {
+                    Mensaje msg = cliente.recibirMsgServidor();
+                    if (msg != null) {
+                        SwingUtilities.invokeLater(() -> procesarMensaje(msg)); //pa que se actualize la pantalla
+                    }
+                } catch (Exception e) {
+                    System.out.println("Desconectado del servidor");
+                    return;
+                }
+            }
+        }).start();
     }
+
+    // Para que cada pantalla dirá qué hacer cuando llegue un mensaje
+    protected abstract void procesarMensaje(Mensaje m);
 }
