@@ -12,7 +12,7 @@ public class PantallaBar extends PantallaBase {
     private JLabel lblEstado;
 
     public PantallaBar() {
-        super("Pantalla Bar");
+        super("PANTALLA BAR");
         modeloBebidas = new DefaultListModel<>();
         listaBebidas = new JList<>(modeloBebidas);
         listaBebidas.setFixedCellHeight(60);

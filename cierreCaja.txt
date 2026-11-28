@@ -1,6 +1,10 @@
 ====CIERRE DE CAJA====
-Fecha:  2026-11-25T20:31:58.847200
+Fecha:  2026-11-27T22:44:13.683892
 --------------------------------
-Mesa : 3 Total: 345.0
+Mesa : 2 Total: 128.0
+Mesa : 2 Total: 128.0
+Mesa : 2 Total: 128.0
+Mesa : 4 Total: 19.2
+Mesa : 4 Total: 19.2
 --------------------------------
-Total General: 345.0
+Total General: 422.4

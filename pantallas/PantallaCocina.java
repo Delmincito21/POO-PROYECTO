@@ -15,7 +15,7 @@ public class PantallaCocina extends PantallaBase {
     private JLabel lblEstado;
 
     public PantallaCocina() {
-        super("Pantalla Cocina");
+        super("PANTALLA COCINA");
         modeloPedidos = new DefaultListModel<>();
         listaPedidos = new JList<>(modeloPedidos);
 
