@@ -52,6 +52,7 @@ pantallas/
   PantallaCaja.java
   PantallaCamarero.java
   PantallaCocina.java
+  PantallaPrueba.java
 red/
   Cliente.java
   ManejadorCliente.java
@@ -83,11 +84,47 @@ public class PantallaCaja {
 }
 </file>
 
-<file path="pantallas/PantallaCamarero.java">
+<file path="pantallas/PantallaPrueba.java">
 package pantallas;
 
-public class PantallaCamarero {
+import javax.swing.*;
+import java.awt.*;
+
+import modelo.*;
+import red.Mensaje;
+
+public class PantallaPrueba extends PantallaBase {
+    private JList<PlatoComida> listavisual;
+    private DefaultListModel<PlatoComida> modeloLista;
+    private JButton btnlisto;
+
+    public PantallaPrueba(){
+        super("Pantalla Cocina");
+        setLayout(new BorderLayout());
+        modeloLista = new DefaultListModel<>();
+        listavisual = new JList<>(modeloLista);
+
+
+
+
+
+        
+        setVisible(true);
+    }
+       
     
+    
+
+
+
+    @Override
+    protected void procesarMensaje(Mensaje m) {
+        
+        
+    }
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> new PantallaPrueba());
+    }
 }
 </file>
 
@@ -338,6 +375,11 @@ public abstract class Pedido implements Serializable{
     public void setEstadoPedido(EstadoPedido estadoPedido) {this.estadoPedido = estadoPedido;}
 
     public abstract double calcularTotal();
+    @Override
+    public String toString() {
+    String tipo = (this instanceof PlatoComida) ? "Comida" : "Bebida";
+    return "Mesa " + numMesa + " | " + tipo + " | " + descripcion + " | " + precioBase + " pesos.";
+}
 }
 </file>
 
@@ -439,46 +481,183 @@ public Mesa obtenerMesa(int numMesa){
 }
 </file>
 
-<file path="pantallas/PantallaBase.java">
+<file path="pantallas/PantallaCamarero.java">
 package pantallas;
 
 import javax.swing.*;
-import java.io.*;
-import java.net.*;
-import red.*;
-
-public abstract class PantallaBase extends JFrame {
-    
-}
-</file>
-
-<file path="pantallas/PantallaCocina.java">
-package pantallas;
-import red.*;
-import modelo.*;
 import java.awt.*;
-import javax.swing.*;
+import java.util.*;
 
-public class PantallaCocina extends JFrame{
-    public PantallaCocina(){
-        iniciarPantalla();
-    }
+import modelo.*;
+import red.Mensaje;
 
-    public void iniciarPantalla(){
-        setTitle("COCINA");
-        setSize(950, 700);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setResizable(false);
+public class PantallaCamarero extends PantallaBase {
+
+    private JComboBox<Integer> comboMesa;
+    private JComboBox<String> comboTipo;
+    private JTextField txtDescripcion;
+    private JTextField txtPrecio;
+    private JTextField txtCantidad;
+    private JTextArea areaPedidos;
+    private ArrayList<Pedido> listaPedidos;
+    private int contador = 1;
+    private JCheckBox checkTieneBebida;
+    private JCheckBox checkTieneAlcohol;
+    private JLabel lblOpciones;
+    private JLabel lblAlcohol;
+
+    public PantallaCamarero() {
+
+        super("PANTALLA CAMARERO");
+        listaPedidos = new ArrayList<>();
         setLayout(new BorderLayout());
-        getContentPane().setBackground(new Color(100,166,227));
 
+        JPanel panelSuperior = new JPanel(new GridLayout(2, 2));
+        comboMesa = new JComboBox<>();
+        for ( int i = 1; i <= 10; i++) { //cambiar la cantidad de mesa por restaurante
+            comboMesa.addItem(i);
+        }
+        comboTipo = new JComboBox<>(new String[]{"Comida", "Bebida"});
 
+        panelSuperior.add(new JLabel("Seleccionar mesa:"));
+        panelSuperior.add(comboMesa);
+        panelSuperior.add(new JLabel("Tipo de producto:"));
+        panelSuperior.add(comboTipo);
+
+        JPanel panelProducto = new JPanel(new GridLayout(0, 2));
+
+        txtDescripcion = new JTextField();
+        txtPrecio = new JTextField();
+        txtCantidad = new JTextField();
         
-        
+        checkTieneBebida = new JCheckBox("Incluye bebida");
+        checkTieneAlcohol = new JCheckBox("Tiene alcohol");
+
+        lblOpciones = new JLabel("Opciones:");
+        checkTieneBebida = new JCheckBox("Incluye bebida");
+        lblAlcohol = new JLabel();
+        checkTieneAlcohol = new JCheckBox("Tiene alcohol");
+
+        panelProducto.add(lblOpciones);
+        panelProducto.add(checkTieneBebida);
+        panelProducto.add(lblAlcohol);
+        panelProducto.add(checkTieneAlcohol);
+        panelProducto.add(new JLabel("Producto:"));
+        panelProducto.add(txtDescripcion);
+        panelProducto.add(new JLabel("Precio:"));
+        panelProducto.add(txtPrecio);
+        panelProducto.add(new JLabel("Cantidad:"));
+        panelProducto.add(txtCantidad);
+
+        JButton btnAgregar = new JButton("Agregar producto");
+        panelProducto.add(btnAgregar);
+
+        areaPedidos = new JTextArea();
+        areaPedidos.setEditable(false);
+
+        JButton btnEnviar = new JButton("ENVIAR PEDIDO");
+
+        JPanel panelCentral = new JPanel(new BorderLayout());
+
+        panelCentral.add(panelProducto, BorderLayout.NORTH);
+        panelCentral.add(new JScrollPane(areaPedidos), BorderLayout.CENTER);
+
+        add(panelSuperior, BorderLayout.NORTH);
+        add(panelCentral, BorderLayout.CENTER);
+        add(btnEnviar, BorderLayout.SOUTH);
+
+        // AGREGAR PRODUCTO A LA LISTA
+        btnAgregar.addActionListener(e -> agregarProducto());
+
+        // ENVIAR TODOS LOS PRODUCTOS
+        btnEnviar.addActionListener(e -> enviarPedidos());
+        comboTipo.addActionListener(e -> actualizarCheckboxes());
+        checkTieneBebida.addActionListener(e -> actualizarCheckboxes());
+        actualizarCheckboxes();
         setVisible(true);
     }
 
+    private void agregarProducto() {
 
+        try {
+
+            String descripcion = txtDescripcion.getText();
+            double precio = Double.parseDouble(txtPrecio.getText());
+            int cantidad = Integer.parseInt(txtCantidad.getText());
+
+            if (descripcion.isEmpty() || precio <= 0 || cantidad <= 0) {
+
+                JOptionPane.showMessageDialog(this,
+                    "Introduce datos válidos.");
+                return;
+            }
+            int mesa = (int) comboMesa.getSelectedItem();
+            String tipo = (String) comboTipo.getSelectedItem();
+            for (int i = 0; i < cantidad; i++) {
+                Pedido pedido;
+                String id = "PEDIDO-" + contador++;
+                boolean tieneBebida = checkTieneBebida.isSelected();
+                boolean tieneAlcohol = checkTieneAlcohol.isSelected();
+                if (tipo.equals("Comida")) {
+                    pedido = new PlatoComida(id,mesa,descripcion,precio,tieneBebida);
+                } else {
+                    pedido = new Bebida(id,mesa,descripcion,precio,tieneAlcohol);
+                }
+                listaPedidos.add(pedido);
+            }
+            areaPedidos.append(cantidad + " x " + descripcion + " | Mesa: " + mesa + " | Tipo: " + tipo + "\n");
+            txtDescripcion.setText("");
+            txtPrecio.setText("");
+            txtCantidad.setText("1");
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(this,"El precio y la cantidad deben ser números.");
+        }
+    }
+    private void enviarPedidos() {
+
+        if (listaPedidos.isEmpty()) {
+
+            JOptionPane.showMessageDialog(this,"No hay productos para enviar.");
+            return;
+        }
+
+        for (Pedido pedido : listaPedidos) {
+
+            Mensaje mensaje = new Mensaje(Mensaje.tipoMensaje.NUEVO_PEDIDO,pedido,pedido.getNumMesa(),"Nuevo pedido: " + pedido.getDescripcion());
+            cliente.enviarMsgServidor(mensaje);
+        }
+
+        JOptionPane.showMessageDialog(this,"Pedidos enviados correctamente.");
+        listaPedidos.clear();
+        areaPedidos.setText("");
+    }
+    @Override
+    protected void procesarMensaje(Mensaje m) {
+
+        if (m.getTipo() == Mensaje.tipoMensaje.INFO) {
+            areaPedidos.append("SERVIDOR: " + m.getDescripcion() + "\n");
+        }
+    }
+    private void actualizarCheckboxes() {
+        String tipo = (String) comboTipo.getSelectedItem();
+        boolean esComida = "Comida".equals(tipo);
+
+        lblOpciones.setVisible(esComida);
+        checkTieneBebida.setVisible(esComida);
+        if (!esComida) checkTieneBebida.setSelected(false);
+
+        boolean esAlcohol = !esComida || checkTieneBebida.isSelected();
+        lblAlcohol.setVisible(esAlcohol);
+        checkTieneAlcohol.setVisible(esAlcohol);
+        if (!esAlcohol) checkTieneAlcohol.setSelected(false);
+    }
+
+    public static void main(String[] args) {
+
+        SwingUtilities.invokeLater(() ->
+            new PantallaCamarero()
+        );
+    }
 }
 </file>
 
@@ -746,6 +925,117 @@ public class Mesa implements Serializable {
     {
         listaPedidos.clear();
         estado = EstadoMesa.LIBRE;
+    }
+}
+</file>
+
+<file path="pantallas/PantallaBase.java">
+package pantallas;
+
+import javax.swing.*;
+import red.*;
+
+
+public abstract class PantallaBase extends JFrame {
+    protected Cliente cliente;
+
+    public PantallaBase(String titulo) {
+        setTitle(titulo);
+        setSize(400, 400);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        
+        
+        cliente = new Cliente("127.0.0.1", 8080);
+        cliente.conectar();
+
+      Thread hilo =  new Thread(() -> {
+            while (true) {
+                try {
+                    Mensaje msg = cliente.recibirMsgServidor();
+                    if (msg != null) {
+                        SwingUtilities.invokeLater(() -> procesarMensaje(msg)); //pa que se actualize la pantalla
+                    }
+                } catch (Exception e) {
+                    System.out.println("Error recibiendo mensajes: "+ e.getMessage());
+                    return;
+                }
+            }
+        });
+        hilo.setDaemon(true);
+        hilo.start();
+    }
+
+    protected abstract void procesarMensaje(Mensaje m);
+}
+</file>
+
+<file path="pantallas/PantallaCocina.java">
+package pantallas;
+
+import javax.swing.*;
+import java.awt.*;
+import modelo.*;
+import red.*;
+
+public class PantallaCocina extends PantallaBase {
+
+    private DefaultListModel<Pedido> modeloPedidos;
+    private JList<Pedido> listaPedidos;
+    private JButton btnMarcarListo;
+
+    private JLabel lblEstado;
+
+    public PantallaCocina() {
+        super("Pantalla Cocina");
+        modeloPedidos = new DefaultListModel<>();
+        listaPedidos = new JList<>(modeloPedidos);
+
+        btnMarcarListo = new JButton("Marcar como listo");
+        lblEstado = new JLabel("Esperando pedidos...");
+
+        setLayout(new BorderLayout());
+
+        add(new JLabel("PEDIDOS PENDIENTES", SwingConstants.CENTER), BorderLayout.NORTH);
+        add(new JScrollPane(listaPedidos), BorderLayout.CENTER);
+
+        JPanel panelAbajo = new JPanel(new BorderLayout());
+
+        panelAbajo.add(lblEstado, BorderLayout.CENTER);
+        panelAbajo.add(btnMarcarListo, BorderLayout.EAST);
+
+        add(panelAbajo, BorderLayout.SOUTH);
+
+        btnMarcarListo.addActionListener(e -> marcarListo());
+
+        setSize(500, 600);
+        setLocationRelativeTo(null);
+        setVisible(true);
+    }
+
+    private void marcarListo() {
+        Pedido pedido = listaPedidos.getSelectedValue();
+        if (pedido == null) {
+            lblEstado.setText("Seleccione un pedido primero");
+            return;
+        }
+        Mensaje mensaje = new Mensaje(Mensaje.tipoMensaje.PEDIDO_LISTO, pedido,pedido.getNumMesa(),pedido.getDescripcion());
+        cliente.enviarMsgServidor(mensaje);
+        modeloPedidos.removeElement(pedido);
+        lblEstado.setText("Pedido marcado como listo");
+    }
+
+    @Override
+    protected void procesarMensaje(Mensaje m) {
+
+        if (m.getTipo() == Mensaje.tipoMensaje.NUEVO_PEDIDO) {
+            Pedido pedido = (Pedido) m.getPedido();
+            modeloPedidos.addElement(pedido);
+            lblEstado.setText("Nuevo pedido recibido");
+        }
+    }
+
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> new PantallaCocina());
     }
 }
 </file>

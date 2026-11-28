@@ -32,4 +32,9 @@ public abstract class Pedido implements Serializable{
     public void setEstadoPedido(EstadoPedido estadoPedido) {this.estadoPedido = estadoPedido;}
 
     public abstract double calcularTotal();
+    @Override
+    public String toString() {
+    String tipo = (this instanceof PlatoComida) ? "Comida" : "Bebida";
+    return "Mesa " + numMesa + " | " + tipo + " | " + descripcion + " | " + precioBase + " pesos.";
+}
 }
