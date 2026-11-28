@@ -15,31 +15,42 @@ public class Cliente {
         this.host = host;
         this.puerto = puerto;
         this.isConectado = false;
-}
-public void conectar(){
-    try{
-        
+    }
+    
+    public boolean isConectado() { return isConectado;}
+
+
+    public boolean conectar(){
+        try{
+            cerrarConexion();
+            
         socket = new Socket(host,puerto);
         salida = new ObjectOutputStream(socket.getOutputStream());
         entrada = new ObjectInputStream(socket.getInputStream());
         isConectado = true;
         System.out.println("Conectado al servidor correctamente");
+        return true;
 
     }catch(IOException e ){
         System.out.println("Error al crear el cliente: " + e.getMessage());
+        isConectado =false;
+        return false;
     }
 }
-public void enviarMsgServidor(Mensaje m){
+
+public  synchronized boolean enviarMsgServidor(Mensaje m){
     if(!isConectado){
         System.out.println("No hay conexión con el servidor.");
-        return;
+        return false;
     }
     try{
         salida.writeObject(m);
         salida.flush();
-
+        return true;
     }catch(IOException e){
         System.out.println("Error al enviar mensaje: " + e.getMessage());
+        isConectado = false;
+        return false;
     }
 }
 public Mensaje recibirMsgServidor() throws ClassNotFoundException{ // profe ese thowr lo puso el bombillo
@@ -80,7 +91,6 @@ public static void main(String[] args) {
             cliente.enviarMsgServidor(msg);
             cliente.cerrarConexion();
         }
-        //hacer algo pa que no se deconecte rapido
     
         
     }

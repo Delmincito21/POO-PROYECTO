@@ -19,13 +19,20 @@ public abstract class PantallaBase extends JFrame {
       Thread hilo =  new Thread(() -> {
             while (true) {
                 try {
+                    if(!cliente.isConectado()){
+                        System.out.println("Intentado reconexion: ");
+                        cliente.conectar();
+                        Thread.sleep(3000);
+                        continue;
+                    }
+
                     Mensaje msg = cliente.recibirMsgServidor();
                     if (msg != null) {
                         SwingUtilities.invokeLater(() -> procesarMensaje(msg)); //pa que se actualize la pantalla
                     }
                 } catch (Exception e) {
                     System.out.println("Error recibiendo mensajes: "+ e.getMessage());
-                    return;
+                    cliente.cerrarConexion();
                 }
             }
         });
