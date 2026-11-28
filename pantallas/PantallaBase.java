@@ -29,7 +29,6 @@ public abstract class PantallaBase extends JFrame {
                 }
             }
         });
-        hilo.setDaemon(true);
         hilo.start();
     }
 
