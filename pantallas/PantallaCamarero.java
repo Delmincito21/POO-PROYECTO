@@ -16,6 +16,7 @@ public class PantallaCamarero extends PantallaBase {
     private JTextField txtPrecio;
     private JTextField txtCantidad;
     private JTextArea areaPedidos;
+    private JTextArea areaNotificaciones;
     private ArrayList<Pedido> listaPedidos;
     private int contador = 1;
     private JCheckBox checkTieneBebida;
@@ -72,12 +73,20 @@ public class PantallaCamarero extends PantallaBase {
         areaPedidos = new JTextArea();
         areaPedidos.setEditable(false);
 
+        areaNotificaciones = new JTextArea();
+        areaNotificaciones.setEditable(false);
+        
+        JPanel panelNotif = new JPanel(new BorderLayout());
+        panelNotif.add(new JLabel("Pedidos listos para recoger:"), BorderLayout.NORTH);
+        panelNotif.add(new JScrollPane(areaNotificaciones),BorderLayout.CENTER);
+
         JButton btnEnviar = new JButton("ENVIAR PEDIDO");
 
         JPanel panelCentral = new JPanel(new BorderLayout());
 
         panelCentral.add(panelProducto, BorderLayout.NORTH);
         panelCentral.add(new JScrollPane(areaPedidos), BorderLayout.CENTER);
+        panelCentral.add(panelNotif,BorderLayout.SOUTH);
 
         add(panelSuperior, BorderLayout.NORTH);
         add(panelCentral, BorderLayout.CENTER);
@@ -85,7 +94,6 @@ public class PantallaCamarero extends PantallaBase {
 
         // AGREGAR PRODUCTO A LA LISTA
         btnAgregar.addActionListener(e -> agregarProducto());
-
         // ENVIAR TODOS LOS PRODUCTOS
         btnEnviar.addActionListener(e -> enviarPedidos());
         comboTipo.addActionListener(e -> actualizarCheckboxes());

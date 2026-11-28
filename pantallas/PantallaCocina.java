@@ -58,8 +58,10 @@ public class PantallaCocina extends PantallaBase {
 
         if (m.getTipo() == Mensaje.tipoMensaje.NUEVO_PEDIDO) {
             Pedido pedido = (Pedido) m.getPedido();
-            modeloPedidos.addElement(pedido);
-            lblEstado.setText("Nuevo pedido recibido");
+            if(pedido instanceof PlatoComida){
+                modeloPedidos.addElement(pedido);
+                lblEstado.setText("Nuevo pedido recibido, Mesa: "+ pedido.getNumMesa());
+            }
         }
     }
 

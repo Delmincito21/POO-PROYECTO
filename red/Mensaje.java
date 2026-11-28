@@ -9,6 +9,7 @@ public class Mensaje implements Serializable{
     private Pedido pedido;
     private int numMesa;
     private String descripcion;
+    private double monto;
    
     
 
@@ -17,11 +18,13 @@ public class Mensaje implements Serializable{
         this.pedido = pedido;
         this.numMesa = numMesa;
         this.descripcion = descripcion;
+        this.monto = 0;
     }
 
     public tipoMensaje getTipo() {return tipo;}
     public Pedido getPedido() {return pedido;}
     public int getNumMesa() {return numMesa;}
     public String getDescripcion() {return descripcion;}
+    public double getMonto(){return monto;}
     
 }

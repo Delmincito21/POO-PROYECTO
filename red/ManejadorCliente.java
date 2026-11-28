@@ -42,7 +42,7 @@ public class ManejadorCliente implements Runnable{
                 switch (mensaje.getTipo()) {
                     case NUEVO_PEDIDO:
                         restaurante.agregarPedidoMesa(mensaje.getNumMesa(), mensaje.getPedido());
-                        ProcesarPedido procesar = new ProcesarPedido(mensaje.getPedido(),servidor);
+                        ProcesarPedido procesar = new ProcesarPedido(mensaje.getPedido());
                         Thread hiloCocina = new Thread(procesar);
                         hiloCocina.start();
                         servidor.difusion(mensaje);
