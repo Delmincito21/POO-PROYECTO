@@ -158,9 +158,14 @@ public class PantallaCamarero extends PantallaBase {
     }
     @Override
     protected void procesarMensaje(Mensaje m) {
-
         if (m.getTipo() == Mensaje.tipoMensaje.INFO) {
             areaPedidos.append("SERVIDOR: " + m.getDescripcion() + "\n");
+        } else if(m.getTipo() == Mensaje.tipoMensaje.PEDIDO_LISTO){
+            Pedido p = m.getPedido();
+            if(p != null){
+                String tipo = (p instanceof PlatoComida) ? "Comida" : "Bebida";
+                areaNotificaciones.append("Mesa: " + p.getNumMesa() + " | " + tipo +  p.getDescripcion() + " Listo");
+            }
         }
     }
     private void actualizarCheckboxes() {
